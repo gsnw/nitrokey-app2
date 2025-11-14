@@ -29,6 +29,32 @@ jobs:
           $VERSION_TAG="${{ github.event.release.tag_name }}"
           $VERSION_PACKAGE=poetry version --short
           if ($VERSION_TAG.Substring(1) -eq $VERSION_PACKAGE) {exit 0} else {exit 1}
+  build-onefile:
+    name: Build onefile
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install required packages
+        run: choco install poetry --source python
+      - name: Create virtual environment
+        run: poetry install
+      - name: Create Windows version info file
+        run: |
+          Invoke-Expression "$(poetry env info --path)\Scripts\Activate.ps1"
+          create-version-file `
+            --outfile .\ci-scripts\windows\pyinstaller\file_version_info.txt `
+            --version "$(python -c 'from nitrokeyapp import __version__; print(__version__)')" `
+            .\ci-scripts\windows\pyinstaller\file_version_info_metadata.yaml
+      - name: Build onefile
+        run: |
+          Invoke-Expression "$(poetry env info --path)\Scripts\Activate.ps1"
+          pyinstaller ci-scripts/windows/pyinstaller/nitrokey-app-onefile.spec
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nitrokey-app-onefile
+          path: dist/nitrokey-app.exe
   build-onedir:
     name: Build onedir
     runs-on: windows-latest
