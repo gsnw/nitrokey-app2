@@ -66,9 +66,11 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: nitrokey-app-onefile
-      - name: Rename binary
+          path: binary-out  # Expliziter Pfad um Verwirrung zu vermeiden
+      - name: Rename and Publish
+        shell: pwsh
         run: |
-          mv dist/nitrokey-app.exe nitrokey-app-${{ github.event.release.tag_name }}-x64-windows-binary.exe
+          Move-Item "binary-out\nitrokey-app.exe" "nitrokey-app-${{ github.event.release.tag_name }}-x64-windows-binary.exe"
       - name: Publish release
         uses: softprops/action-gh-release@v2[cite: 1]
         with:
