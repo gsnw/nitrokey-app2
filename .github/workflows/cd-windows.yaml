@@ -34,11 +34,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6[cite: 1, 2]
+        uses: actions/checkout@v6
       - name: Install required packages
-        run: choco install poetry --source python[cite: 2]
+        run: choco install poetry --source python
       - name: Create virtual environment
-        run: poetry install[cite: 2]
+        run: poetry install
       - name: Create Windows version info file
         run: |
           poetry run create-version-file `
@@ -47,12 +47,12 @@ jobs:
             .\ci-scripts\windows\pyinstaller\file_version_info_metadata.yaml
       - name: Build onefile
         run: |
-          poetry run pyinstaller ci-scripts/windows/pyinstaller/nitrokey-app-onefile.spec[cite: 4]
+          poetry run pyinstaller ci-scripts/windows/pyinstaller/nitrokey-app-onefile.spec
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6[cite: 2]
+        uses: actions/upload-artifact@v6
         with:
           name: nitrokey-app-onefile
-          path: dist/nitrokey-app.exe[cite: 4]
+          path: dist/nitrokey-app.exe
 
   publish-binary:
     name: Publish Windows Binary
@@ -72,6 +72,6 @@ jobs:
         run: |
           Move-Item "binary-out\nitrokey-app.exe" "nitrokey-app-${{ github.event.release.tag_name }}-x64-windows-binary.exe"
       - name: Publish release
-        uses: softprops/action-gh-release@v2[cite: 1]
+        uses: softprops/action-gh-release@v2
         with:
           files: nitrokey-app-${{ github.event.release.tag_name }}-x64-windows-binary.exe
